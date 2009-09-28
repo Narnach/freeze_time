@@ -1,0 +1,30 @@
+= FreezeTime
+
+FreezeTime is a helper for testing code that uses time in some way. It implements Kernel#freeze_time, which freezes time within the block passed to it.
+
+Within the block, time is frozen.
+  t1 = nil
+  freeze_time do |time|
+    t1 = Time.now
+    sleep 1
+    t2 = Time.now
+    t1 == t2 # => true
+  end
+  t1 == Time.now # => false
+
+The value of Time.now is captured before the block is run and then all
+subsequent calls to Time.now will yield the same Time object. After the
+block, Time.now returns to its previous functionality.
+
+== Usage
+
+All you need to do to use it in your tests is:
+  require 'freeze_time'
+  freeze_time do |time|
+    # ...
+  end
+There are no external dependencies.
+
+== Contributors
+
+Wes Oldenbeuving [http://github.com/Narnach]
