@@ -1,29 +1,32 @@
 = FreezeTime
 
-FreezeTime is a helper for testing code that uses time in some way. It implements Kernel#freeze_time, which freezes time within the block passed to it.
+Every once in a while you have a need to freeze time in your tests or specs. Usually the code that does it is ugly code, like in this example that uses rspec:
 
-Within the block, time is frozen.
-  t1 = nil
+  frozen_time = Time.now
+  Time.stub!(:now).and_return(frozen_time)
+  Foo.bar.should == frozen_time
+
+You need to read three dense lines to understand that time is frozen and that Foo.bar should return the current time. What if this could be a lot more intention revealing?
+
   freeze_time do |time|
-    t1 = Time.now
-    sleep 1
-    t2 = Time.now
-    t1 == t2 # => true
+    Foo.bar.should == time
   end
-  t1 == Time.now # => false
 
-The value of Time.now is captured before the block is run and then all
-subsequent calls to Time.now will yield the same Time object. After the
-block, Time.now returns to its previous functionality.
+FreezeTime helps you test code that requires time to be frozen. It does this by implementing Object#freeze_time, which allows you to freeze time for the duration of the block. This makes your code more intention revealing and a lot more pleasant to look at.
 
-== Usage
+== Installation
 
-All you need to do to use it in your tests is:
-  require 'freeze_time'
-  freeze_time do |time|
-    # ...
-  end
-There are no external dependencies.
+If you are using http://gemcutter.org, installation is easy:
+
+  gem install freeze_time
+
+The alternative is to build and install the gem by hand:
+
+  git clone git://github.com/Narnach/freeze_time.git
+  cd freeze_time
+  rake install
+  
+There are no external dependencies and it should be compatible with all testing frameworks.
 
 == Contributors
 
